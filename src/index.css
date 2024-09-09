@@ -1,0 +1,239 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.invoice-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 50px;
+  border: 1px solid #ddd;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding-top: 20px;
+}
+
+.invoice-header{
+  display: flex;
+  justify-content: space-between;
+}
+
+.invoice-title h5 {
+  font-size: 21px;
+  margin: 0;
+}
+
+.invoice-title p {
+  margin: 0;
+  text-align: right;
+}
+
+.invoice-address{
+  display: flex;
+  width: 100%;
+  margin-top: 45px;
+}
+
+.seller-address{
+  width: 50%;
+  display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+
+.seller-address h5{
+  margin: 0;
+}
+
+.seller-address p{
+  margin: 0;
+}
+
+.seller-pan-div{
+  display: flex;
+  gap: 2px;
+}
+
+.seller-gst-div{
+  display: flex;
+  gap: 2px;
+}
+
+
+.billing-address{
+  width: 50%;
+  text-align: end;
+}
+
+.billing-address h5{
+  margin: 0;
+}
+
+.billing-address p{
+  margin: 0;
+}
+
+.billing-state-div{
+  display: flex;
+  justify-content: end;
+}
+
+.shipping-address{
+  text-align: end;
+}
+
+.shipping-address h5 {
+  margin: 0;
+}
+
+.shipping-address p {
+  margin: 0;
+}
+
+.shipping-address-details{
+  width: 35%;
+  text-align: end;
+  position: relative;
+  left: 65%;
+}
+
+.shipping-address-state-and-place{
+  display: flex;
+    justify-content: end;
+    gap: 3px;
+}
+
+.invoice-logo{
+  position: relative;
+  left: 15px;
+
+}
+
+.invoice-info{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+}
+
+.invoice-info p {
+  margin: 0;
+}
+
+.invoice-info h5 {
+  margin: 0;
+}
+
+.invoice-info-order{
+  display: flex;
+  gap: 3px;
+}
+
+.invoice-details{
+  display: flex;
+  justify-content: end;
+  gap: 3px;
+}
+
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th {
+  background-color: #c0c0c0;
+}
+.invoice-table{
+  margin-top: 20px;
+}
+
+.table-header{
+text-align: left;
+}
+
+.table-quantity{
+  width: 4%;
+}
+
+.table-description-header{
+  width: 45%;
+}
+
+.table-quantity-value{
+  position: relative;
+  bottom: 23px;
+  left: 14px;
+}
+
+.table-description{
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.table-unit-price{
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.table-net-amount{
+  display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.table-tax-rate{
+  display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.table-tax-type{
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.table-tax-amount{
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+
+}
+
+.table-total-amount{
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.amount-words{
+  font-weight: 700;
+}
+
+.signature{
+  text-align: end;
+    font-weight: 700;
+}
+
+.signature p{
+  margin: 0;
+}
+
+.tax-info {
+  margin: 0;
+  font-weight: 500;
+}
+
+.total-value{
+  background-color: #c0c0c0;
+}
+
