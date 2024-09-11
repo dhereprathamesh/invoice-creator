@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { BsFileImage } from "react-icons/bs";
 import FilePicker from "../../components/file-picker/Filepicker";
@@ -6,7 +6,10 @@ import { Grid, Button, Typography } from "@mui/material";
 import Input from "../../components/form-components/input";
 import DatePickerInput from "../../components/date-picker/DatePicker";
 import DropDown from "../../components/dropdown/Dropdown";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 const InvoiceForm = ({
+  setValue,
   register,
   handleSubmit,
   handleCreateInvoice,
@@ -14,11 +17,93 @@ const InvoiceForm = ({
   control,
   setFiles,
   handleImages,
+  inputFeilds,
+  addMoreItem,
+  handledeleteItem,
+  watchedItems,
+  id,
 }) => {
+  const navigate = useNavigate();
+
   const reverseCharge_OBj = [
     { value: "Yes", label: "Yes", id: "yes" },
     { value: "No", label: "No", id: "no" },
   ];
+
+  // useEffect(() => {
+  //   watchedItems.forEach((item, index) => {
+  //     console.log("item", item);
+
+  //     // Ensure values are strings before parsing
+  //     const unitPrice = parseFloat(item.unitPrice) || 0;
+  //     const quantity = parseFloat(item.quantity) || 0;
+  //     const discount = parseFloat(item.discount.replace("%", "").trim()) || 0;
+
+  //     console.log(
+  //       `unitPrice: ${unitPrice}, quantity: ${quantity}, discount: ${discount}`
+  //     );
+  //   });
+  // }, [watchedItems]);
+
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`http://localhost:8080/api/invoice/getSingleinvoiceById/${id}`)
+        .then((response) => {
+          const data = response.data.data;
+          console.log("update", data);
+
+          // Prefill form data
+          setValue("companyLogo", data.companyLogo);
+          setValue("name", data.name);
+          setValue("address", data.address);
+          setValue("city", data.city);
+          setValue("state", data.state);
+          setValue("pincode", data.pincode);
+          setValue("panNo", data.panNo);
+          setValue("gstRegistrationNo", data.gstRegistrationNo);
+          setValue("placeOfSupply", data.placeOfSupply);
+          setValue("billingName", data.billingName);
+          setValue("billingAddress", data.billingAddress);
+          setValue("billingCity", data.billingCity);
+          setValue("billingState", data.billingState);
+          setValue("billingPincode", data.billingPincode);
+          setValue("billingStateUtCode", data.billingStateUtCode);
+          setValue("shippingName", data.shippingName);
+          setValue("shippingAddress", data.shippingAddress);
+          setValue("shippingCity", data.shippingCity);
+          setValue("shippingState", data.shippingState);
+          setValue("shippingPincode", data.shippingPincode);
+          setValue("shippingStateUtCode", data.shippingStateUtCode);
+          setValue("orderNo", data.orderNo);
+          setValue("orderDate", data.orderDate);
+          setValue("invoiceNo", data.invoiceNo);
+          setValue("invoiceDetails", data.invoiceDetails);
+          setValue("invoiceDate", data.invoiceDate);
+          setValue("reverseCharge", data.reverseCharge);
+          setValue("netAmount", data.netAmount);
+          setValue("taxRate", data.taxRate);
+          setValue("taxRAmount", data.taxRAmount);
+          setValue("totalAmount", data.totalAmount);
+          setValue("signature", data.signature);
+
+          // Set items details if available
+          data.items.forEach((item, index) => {
+            setValue(`items[${index}].description`, item.description);
+            setValue(`items[${index}].unitPrice`, item.unitPrice);
+            setValue(`items[${index}].quantity`, item.quantity);
+            setValue(`items[${index}].discount`, item.discount);
+            // setValue(`items[${index}].discount`, item.discount);
+            // setValue(`items[${index}].discount`, item.discount);
+            // setValue(`items[${index}].discount`, item.discount);
+            // setValue(`items[${index}].discount`, item.discount);
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching invoice data:", error);
+        });
+    }
+  }, [id, setValue]);
 
   return (
     <form onSubmit={handleSubmit(handleCreateInvoice)}>
@@ -264,6 +349,15 @@ const InvoiceForm = ({
               inputRef={register("shippingStateUtCode")}
             />
           </Grid>
+          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
+            <Input
+              label="Place of Delivery"
+              name="placeOfDelivery"
+              id="placeOfDelivery"
+              placeholder="Enter Place of Delivery"
+              inputRef={register("placeOfDelivery")}
+            />
+          </Grid>
           {/* **************************** Order Details ************************** */}
           <Grid item sx={{ position: "relative" }} xs={12}>
             <Typography
@@ -363,52 +457,52 @@ const InvoiceForm = ({
               Items Details
             </Typography>
           </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
-            <Input
-              label="Description"
-              name="description"
-              id="description"
-              placeholder="Enter Description"
-              inputRef={register("description")}
-            />
-          </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
-            <Input
-              label="Unit Price"
-              name="unitPrice"
-              id="unitPrice"
-              placeholder="Enter Unit Price"
-              inputRef={register("unitPrice")}
-            />
-          </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
-            <Input
-              label="Quantity"
-              name="quantity"
-              id="quantity"
-              placeholder="Enter Quantity"
-              inputRef={register("quantity")}
-            />
-          </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
-            <Input
-              label="Discount"
-              name="discount"
-              id="discount"
-              placeholder="Enter Discount"
-              inputRef={register("discount")}
-            />
-          </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
-            <Input
-              label="Net Amount"
-              name="netAmount"
-              id="netAmount"
-              placeholder="Enter Net Amount"
-              inputRef={register("netAmount")}
-            />
-          </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
+
+          {inputFeilds.map((item, index) => (
+            <React.Fragment key={index}>
+              <Grid item xs={12} sm={6} md={4}>
+                <Input
+                  label={`Description ${index + 1}`}
+                  name={`items[${index}].description`}
+                  inputRef={register(`items[${index}].description`)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Input
+                  label={`Unit Price ${index + 1}`}
+                  name={`items[${index}].unitPrice`}
+                  inputRef={register(`items[${index}].unitPrice`)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Input
+                  label={`Quantity ${index + 1}`}
+                  name={`items[${index}].quantity`}
+                  inputRef={register(`items[${index}].quantity`)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Input
+                  label={`Discount ${index + 1}`}
+                  name={`items[${index}].discount`}
+                  inputRef={register(`items[${index}].discount`)}
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Input
+                  label={`Net Amount ${index + 1}`}
+                  name={`items[${index}].netAmount`}
+                  inputRef={register(`items[${index}].netAmount`)}
+                  fullWidth
+                />
+              </Grid>
+            </React.Fragment>
+          ))}
+          <Grid item xs={12} sm={6} md={4}>
             <Input
               label="Tax Rate"
               name="taxRate"
@@ -417,16 +511,16 @@ const InvoiceForm = ({
               inputRef={register("taxRate")}
             />
           </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <Input
               label="Tax Amount"
-              name="taxRAmount"
-              id="taxRAmount"
+              name="taxAmount"
+              id="taxAmount"
               placeholder="Enter Tax Amount"
-              inputRef={register("taxRAmount")}
+              inputRef={register("taxAmount")}
             />
           </Grid>
-          <Grid item sx={{ position: "relative" }} xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={6} md={4}>
             <Input
               label="Total Amount"
               name="totalAmount"
@@ -434,6 +528,44 @@ const InvoiceForm = ({
               placeholder="Enter Total Amount"
               inputRef={register("totalAmount")}
             />
+          </Grid>
+          {/* Add More Item and Back Buttons */}
+          <Grid
+            item
+            sx={{
+              position: "relative",
+              display: "flex",
+              gap: "2%",
+              justifyContent: "end",
+              bottom: "40px",
+            }}
+            xs={12}
+          >
+            <Button
+              variant="outlined"
+              color="#0e3934"
+              sx={{
+                backgroundColor: "#0e3934", // Dark Green
+                color: "#fff",
+                "&:hover": {
+                  backgroundColor: "#fff",
+                  color: "#0e3934",
+                  // fontWeight: "bold",
+                  border: "1px solid #0e3934",
+                },
+              }}
+              onClick={addMoreItem} // Add more items on click
+            >
+              Add More Item
+            </Button>
+
+            <Button
+              variant="outlined"
+              color="#0e3934"
+              onClick={handledeleteItem}
+            >
+              Back
+            </Button>
           </Grid>
 
           <Grid item sx={{ position: "relative" }} xs={12}>
@@ -453,17 +585,41 @@ const InvoiceForm = ({
             color="primary"
             sx={{
               backgroundColor: "rgb(14 57 52)", // Dark Green Color
-              color: "#fff", // White Text and Icon
+              color: "#fff",
+              marginRight: "25px", // White Text and Icon
               "&:hover": {
                 backgroundColor: "#fff", // Slightly darker green on hover
                 color: "rgb(14 57 52)",
                 fontWeight: "bold",
-                border: "2px solid rgb(14 57 52)", // Dark Green border on hover
+                border: "2px solid rgb(14 57 52)",
+                marginRight: "25px",
               },
             }}
           >
-            Submit
+            {id ? "Update" : "Submit"}
           </Button>
+          {id ? (
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              sx={{
+                backgroundColor: "rgb(14 57 52)", // Dark Green Color
+                color: "#fff", // White Text and Icon
+                "&:hover": {
+                  backgroundColor: "#fff", // Slightly darker green on hover
+                  color: "rgb(14 57 52)",
+                  fontWeight: "bold",
+                  border: "2px solid rgb(14 57 52)", // Dark Green border on hover
+                },
+              }}
+              onClick={() => navigate(`/invoice-view/${id}`)}
+            >
+              View Invoice
+            </Button>
+          ) : (
+            <></>
+          )}
         </StyledButton>
       </Container>
     </form>

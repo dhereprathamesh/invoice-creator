@@ -1,13 +1,78 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 import "../index.css";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const InvoiceView = () => {
+  const { id } = useParams();
   const componentRef = useRef();
+
+  const [invoiceInfo, setInvoiceInfo] = useState();
+
+  console.log(invoiceInfo);
+
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
   });
 
+  // Example: Assuming invoiceInfo includes an array of items
+  const tableRows = invoiceInfo?.items?.map((item, index) => (
+    <tr key={index}>
+      <td>{index + 1}</td>
+      <td>
+        <div className="table-description">
+          <span>{item?.description}</span>
+          <span>{item?.additionalInfo}</span>
+        </div>
+      </td>
+      <td>
+        <div className="table-unit-price">
+          <span>₹{item?.unitPrice}</span>
+        </div>
+      </td>
+      <td className="table-quantity-value">{item?.quantity}</td>
+      <td>
+        <div className="table-net-amount">
+          <span>₹{item?.netAmount}</span>
+        </div>
+      </td>
+      <td>
+        <div className="table-tax-rate">
+          <span>{item?.taxRate}%</span>
+        </div>
+      </td>
+      <td>
+        <div className="table-tax-type">
+          <span>{item?.taxType}</span>
+        </div>
+      </td>
+      <td>
+        <div className="table-tax-amount">
+          <span>₹{item?.taxAmount}</span>
+        </div>
+      </td>
+      <td>
+        <div className="table-total-amount">
+          <span>₹{item?.totalAmount}</span>
+        </div>
+      </td>
+    </tr>
+  ));
+
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`http://localhost:8080/api/invoice/getSingleinvoiceById/${id}`)
+        .then((response) => {
+          const data = response.data.data;
+          setInvoiceInfo(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching invoice data:", error);
+        });
+    }
+  }, [id]);
   return (
     <>
       <button onClick={handlePrint}>Print this out!</button>
@@ -31,33 +96,37 @@ const InvoiceView = () => {
           <div className="seller-address">
             <div>
               <h5>Sold By:</h5>
-              <p>Varasiddhi Silk Exports</p>
-              <p>.75 3rd Cross, Lalbagh Road</p>
-              <p>BENGALURU, KARNATAKA, 560027</p>
+              <p>{invoiceInfo?.name}</p>
+              <p>{invoiceInfo?.address}</p>
+              <p>
+                {invoiceInfo?.state}, {invoiceInfo?.city},{" "}
+                {invoiceInfo?.pincode}
+              </p>
               <p>IN</p>
             </div>
             <div className="seller-pan-and-gst-no">
               <div className="seller-pan-div">
                 <h5>PAN No: </h5>
-                <span>AACFVK3325K1ZY</span>
+                <span>{invoiceInfo?.panNo}</span>
               </div>
               <div className="seller-gst-div">
-                <h5>GST Registration No: </h5> <span>29AACFV3325K1ZY</span>
+                <h5>GST Registration No: </h5>{" "}
+                <span>{invoiceInfo?.gstRegistrationNo}</span>
               </div>
             </div>
           </div>
           <div className="billing-address">
             <h5>Billing Address:</h5>
-            <p>Madhu B</p>
+            <p>{invoiceInfo?.billingName}</p>
+            <p>{invoiceInfo?.billingAddress}</p>
             <p>
-              Eurofins IT Solutions India Pvt Ltd, 1st Floor, Maruti Platinum,
-              Lakshminarayan Pura, AECS Layout
+              {invoiceInfo?.billingState}, {invoiceInfo?.billingCity},{" "}
+              {invoiceInfo?.billingPincode}
             </p>
-            <p>BENGALURU, KARNATAKA, 560037</p>
             <p>IN</p>
             <p className="billing-state-div">
               <h5>State/UT Code: </h5>
-              <span>29</span>
+              <span>{invoiceInfo?.billingStateUtCode}</span>
             </p>
           </div>
         </div>
@@ -65,22 +134,25 @@ const InvoiceView = () => {
         {/* Shipping Address */}
         <div className="shipping-address">
           <h5>Shipping Address:</h5>
-          <p>Madhu B</p>
+          <p>{invoiceInfo?.shippingName}</p>
           <p className="shipping-address-details">
-            Eurofins IT Solutions India Pvt Ltd, 1st Floor, Maruti Platinum,
-            Lakshminarayan Pura, AECS Layout
+            {invoiceInfo?.shippingAddress}
           </p>
-          <p>BENGALURU, KARNATAKA, 560037</p>
+          <p>
+            {invoiceInfo?.shippingState}, {invoiceInfo?.shippingCity},{" "}
+            {invoiceInfo?.shippingPincode}
+          </p>
           <p>IN</p>
           <p className="shipping-address-state-and-place">
-            <h5>State/UT Code: </h5> <span>29</span>
+            <h5>State/UT Code: </h5>{" "}
+            <span>{invoiceInfo?.shippingStateUtCode}</span>
           </p>
           <p className="shipping-address-state-and-place">
-            <h5>Place of Supply: </h5> <span>KARNATAKA</span>
+            <h5>Place of Supply: </h5> <span>{invoiceInfo?.placeOfSupply}</span>
           </p>
           <p className="shipping-address-state-and-place">
             <h5>Place of Delivery: </h5>
-            <span>KARNATAKA</span>
+            <span>{invoiceInfo?.placeofSupply}</span>
           </p>
         </div>
 
@@ -88,25 +160,25 @@ const InvoiceView = () => {
           <div>
             <p className="invoice-info-order">
               <h5>Order Number: </h5>
-              <span>403-3225714-7676307</span>
+              <span>{invoiceInfo?.orderNo}</span>
             </p>
             <p className="invoice-info-order">
               <h5>Order Date: </h5>
-              <span>28.10.2019</span>
+              <span>{invoiceInfo?.orderDate}</span>
             </p>
           </div>
           <div>
             <p className="invoice-details">
               <h5>Invoice Number: </h5>
-              <span>IN-761</span>
+              <span>{invoiceInfo?.invoiceNo}</span>
             </p>
             <p className="invoice-details">
               <h5>Invoice Details: </h5>
-              <span>KA-310565025-1920</span>
+              <span>{invoiceInfo?.invoiceDetails}</span>
             </p>
             <p className="invoice-details">
               <h5>Invoice Date: </h5>
-              <span>28.10.2019</span>
+              <span>{invoiceInfo?.invoiceDate}</span>
             </p>
           </div>
         </div>
@@ -128,61 +200,7 @@ const InvoiceView = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>
-                  <div className="table-description">
-                    <span>
-                      Varasiddhi Silk Mens Formal Shirt (SH-05-42, Navy Blue,
-                      42) |
-                    </span>
-                    <span>Shipping Charges</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-unit-price">
-                    <span>₹538</span>
-                    <span>₹538</span>
-                  </div>
-                </td>
-                <td className="table-quantity-value">1</td>
-                <td>
-                  <div className="table-net-amount">
-                    <span>₹538</span>
-                    <span>₹538</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-tax-rate">
-                    <span>2.5%</span>
-                    <span>2.5%</span>
-                    <span>2.5%</span>
-                    <span>2.5%</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-tax-type">
-                    <span>CGST</span>
-                    <span>SGST</span>
-                    <span>CGST</span>
-                    <span>SGST</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-tax-amount">
-                    <span>₹13.45</span>
-                    <span>₹13.45</span>
-                    <span>₹0.77</span>
-                    <span>₹0.77</span>
-                  </div>
-                </td>
-                <td>
-                  <div className="table-total-amount">
-                    <span>₹565.00</span>
-                    <span>₹32.30</span>
-                  </div>
-                </td>
-              </tr>
+              {tableRows}
               <tr>
                 <td>1</td>
                 <td>

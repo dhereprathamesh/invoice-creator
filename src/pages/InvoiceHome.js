@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -7,48 +7,94 @@ import BorderColorOutlinedIcon from "@mui/icons-material/BorderColorOutlined";
 import DeleteForeverOutlinedIcon from "@mui/icons-material/DeleteForeverOutlined";
 import { DataGrid } from "@mui/x-data-grid";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const InvoiceHome = () => {
   const navigate = useNavigate();
   const [pageSize, setPageSize] = useState(5);
+  const [data, setData] = useState();
+  const [rowId, setRowId] = useState();
 
-  const rows = [
-    { id: 1, Category: "Electronics", Brand: "Apple", Price: 999 },
-    { id: 2, Category: "Fashion", Brand: "Nike", Price: 120 },
-    { id: 3, Category: "Home", Brand: "Ikea", Price: 300 },
-    { id: 4, Category: "Beauty", Brand: "L'Oréal", Price: 45 },
-    { id: 5, Category: "Sports", Brand: "Adidas", Price: 85 },
-    { id: 6, Category: "Automotive", Brand: "Tesla", Price: 2000 },
-  ];
+  console.log("dataaaaaaaaa", data);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/invoice/get-all-invoice"
+        );
+        setData(response?.data);
+      } catch (error) {
+        console.error("Error fetching invoices", error);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  const handleDeleteInvoice = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/invoice/${id}`);
+      setData(data.filter((invoice) => invoice._id !== id));
+      console.log("Invoice deleted successfully");
+    } catch (error) {
+      console.error("Error deleting invoice", error);
+    }
+  };
+
+  const rows = data?.data?.map((item, index) => ({
+    id: item._id,
+    invoiceNo: item.invoiceNo,
+    orderNo: item.orderNo,
+    billingName: item.billingName,
+    invoiceDate: new Date(item.invoiceDate).toLocaleDateString(),
+    totalAmount: item.totalAmount,
+    netAmount: item.netAmount,
+  }));
 
   const columns = [
     {
-      field: "id",
-      headerName: "ID",
-      width: 90,
-      flex: 1,
-      headerClassName: "custom-header",
-    },
-    {
-      field: "Category",
-      headerName: "Category",
+      field: "invoiceNo",
+      headerName: "Invoice No",
       width: 150,
       flex: 1,
       headerClassName: "custom-header",
     },
     {
-      field: "Brand",
-      headerName: "Brand",
+      field: "orderNo",
+      headerName: "Order No",
       width: 150,
       flex: 1,
       headerClassName: "custom-header",
     },
     {
-      field: "Price",
-      headerName: "Price",
+      field: "billingName",
+      headerName: "Billing Name",
+      width: 200,
+      flex: 1,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "invoiceDate",
+      headerName: "Invoice Date",
+      width: 150,
+      flex: 1,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "totalAmount",
+      headerName: "Total Amount",
+      width: 150,
+      flex: 1,
       type: "number",
-      width: 90,
+      headerClassName: "custom-header",
+    },
+    {
+      field: "netAmount",
+      headerName: "Net Amount",
+      width: 150,
       flex: 1,
+      type: "number",
       headerClassName: "custom-header",
     },
     {
@@ -60,11 +106,11 @@ const InvoiceHome = () => {
         <>
           <StyledEditIcon
             style={{ cursor: "pointer", marginRight: 8 }}
-            // onClick={() => handleEdit(params.row, params.id)}
+            onClick={() => navigate(`/invoice-update/${params.row.id}`)}
           />
           <StyledDeleteIcon
             style={{ cursor: "pointer" }}
-            // onClick={() => handleDelete(params.id)}
+            onClick={() => handleDeleteInvoice(params.row.id)}
           />
         </>
       ),
